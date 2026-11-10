@@ -226,8 +226,9 @@ function cardHtml({ j, d }) {
       ${j.matched.slice(0, 4).map((m) => `<span class="tag">${esc(m)}</span>`).join('')}</div>
     <div class="rel" title="How closely this matches your resume"><span>Match ${j.relevance}</span><div class="bar"><i style="width:${j.relevance}%"></i></div></div>
     <p class="desc">${esc(j.description)}</p>
-    <div class="actions"><a class="main" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">${j.kind === 'lead' ? 'Careers page' : 'View job'}</a>
-      ${links ? `<a href="${esc(links.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="${esc(links.indeed)}" target="_blank" rel="noopener noreferrer">Indeed</a><a href="${esc(links.google)}" target="_blank" rel="noopener noreferrer">Google</a>` : ''}
+    <div class="actions">${links
+        ? `<a class="main" href="${esc(links.google)}" target="_blank" rel="noopener noreferrer" title="Opens current job ads from this employer">See open jobs</a><a href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">Careers page</a><a href="${esc(links.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="${esc(links.indeed)}" target="_blank" rel="noopener noreferrer">Indeed</a>`
+        : `<a class="main" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">View job posting</a>`}
       ${j.lat != null && !j.remote ? '<button type="button" data-act="map">Show on map</button>' : ''}${j.remote ? '' : `<a href="${esc(dirUrl(j))}" target="_blank" rel="noopener noreferrer">Directions</a>`}</div></li>`;
 }
 function renderList() {
@@ -256,8 +257,8 @@ function updateHomeMarker() {
 function popupHtml({ j, d }) {
   const sal = salaryText(j);
   return `<h4>${esc(j.title)}</h4><div class="pm"><b>${esc(j.company)}</b></div><div class="pm">${esc([j.city, j.state].filter(Boolean).join(', '))}${d != null ? ` · ${Math.round(d)} mi` : ''}</div>
-    <div class="pm">${sal ? esc(sal) : 'Salary not listed'} · ${esc(j.type)} · Match ${j.relevance}</div>${j.kind === 'lead' ? '<div class="pm"><i>Employer lead, so check their careers page</i></div>' : ''}
-    <a class="go" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">${j.kind === 'lead' ? 'Careers page' : 'View job'}</a><button class="sc" type="button" data-sc="${esc(j.id)}">Show in list</button>`;
+    <div class="pm">${sal ? esc(sal) : 'Salary not listed'} · ${esc(j.type)} · Match ${j.relevance}</div>${j.kind === 'lead' ? '<div class="pm"><i>Employer lead: the button opens their current job ads</i></div>' : ''}
+    <a class="go" href="${esc(j.links ? j.links.google : safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">${j.kind === 'lead' ? 'See open jobs' : 'View job posting'}</a><button class="sc" type="button" data-sc="${esc(j.id)}">Show in list</button>`;
 }
 function renderMap() {
   cluster.clearLayers(); markers.clear();
