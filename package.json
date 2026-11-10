@@ -1,0 +1,21 @@
+{
+  "name": "jobfinder",
+  "version": "1.0.0",
+  "description": "Job finder for TBI / injury-biomechanics / computational-modeling researchers: sortable, filterable, map-based.",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "fetch": "node scripts/fetch-jobs.js",
+    "vendor": "node scripts/vendor.js",
+    "test": "node --test test/*.test.js",
+    "postinstall": "node scripts/make-places.js && node scripts/vendor.js && node scripts/fetch-jobs.js"
+  },
+  "devDependencies": {
+    "leaflet": "1.9.4",
+    "leaflet.markercluster": "1.5.3"
+  }
+}
