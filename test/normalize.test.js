@@ -73,3 +73,13 @@ test('precision flag: API coordinates are precise, city lookups are not', () => 
   assert.equal(finalize(withLocation({ title: 'x', company: 'c', url: 'https://x', lat: 29.5, lon: -98.6 }, 'x')).precise, true);
   assert.equal(finalize(withLocation({ title: 'x', company: 'c', url: 'https://x' }, 'San Antonio, TX')).precise, false);
 });
+test('geocode: parses Nominatim result and rejects implausible matches', async () => {
+  const { geocode, plausible } = require('../lib/geocode');
+  const fake = async () => ({ ok: true, json: async () => [{ lat: '29.4449', lon: '-98.6293', display_name: 'SwRI' }] });
+  const pt = await geocode('6220 Culebra Rd, San Antonio, TX', { fetchImpl: fake, delayMs: 0 });
+  assert.ok(Math.abs(pt.lat - 29.4449) < 1e-6);
+  const sa = resolveLocation('San Antonio, TX');
+  assert.equal(plausible(pt, sa), true);
+  assert.equal(plausible({ lat: 40.7, lon: -74 }, sa), false); // wrong city (New York)
+  assert.equal(await geocode('nowhere', { fetchImpl: async () => ({ ok: true, json: async () => [] }), delayMs: 0 }), null);
+});
