@@ -8,7 +8,7 @@ const links = require('../lib/links');
 const { geocode, plausible } = require('../lib/geocode');
 const { resolveLocation } = require('../lib/geo');
 
-const providers = [require('../lib/providers/adzuna'), require('../lib/providers/usajobs'), require('../lib/providers/jsearch'), require('../lib/providers/boards')];
+const providers = [require('../lib/providers/adzuna'), require('../lib/providers/usajobs'), require('../lib/providers/jsearch'), require('../lib/providers/boards'), require('../lib/providers/careers')];
 const MIN_LIVE_RELEVANCE = Number(process.env.MIN_RELEVANCE || 18);
 const OUT = path.join(__dirname, '..', 'public', 'data', 'jobs.json');
 
@@ -50,7 +50,7 @@ async function main() {
     if (!p.enabled()) { log(`- ${p.name}: skipped (no credentials/config)`); continue; }
     log(`- ${p.name}: fetching...`);
     try {
-      const got = await p.fetchJobs({ queries: profile.searchQueries, home: profile.home, log, orgs: employers.map((e) => e.org.replace(/\s*\(.*\)/, '')) });
+      const got = await p.fetchJobs({ queries: profile.searchQueries, home: profile.home, log, orgs: employers.map((e) => e.org.replace(/\s*\(.*\)/, '')), leads: employers });
       const kept = got.filter((j) => j.url && j.relevance >= MIN_LIVE_RELEVANCE);
       sources[p.name] = kept.length;
       live.push(...kept);
