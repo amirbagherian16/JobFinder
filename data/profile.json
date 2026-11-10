@@ -1,20 +1,309 @@
 {
   "_note": "Built from Resume_Draft_1.pdf. Edit weights/terms freely; the relevance score (0-100) is computed from this file.",
-  "home": { "city": "San Antonio", "state": "TX", "lat": 29.4241, "lon": -98.4936 },
+  "home": {
+    "city": "San Antonio",
+    "state": "TX",
+    "lat": 29.4241,
+    "lon": -98.4936
+  },
   "defaultRadiusMiles": 100,
   "strongTerms": [
-    ["traumatic brain injury", 10], ["tbi", 9], ["neurotrauma", 10], ["brain injury", 9], ["concussion", 7], ["head injury", 8],
-    ["injury biomechanics", 10], ["biomechanic", 7], ["head impact", 7], ["blast", 4], ["neurotrauma", 8],
-    ["finite element", 9], ["finite-element", 9], ["ls-dyna", 10], ["lsdyna", 10], ["fea", 4], ["computational model", 7], ["mesh generation", 7], ["hexahedral", 8],
-    ["image segmentation", 8], ["medical image", 7], ["mri", 6], ["segmentation", 5], ["astrocyte", 8],
-    ["machine learning", 6], ["deep learning", 6], ["computer vision", 5], ["data scientist", 4], ["ai/ml", 4],
-    ["neuroscience", 5], ["neuroimaging", 6], ["biomarker", 4], ["neuroengineering", 6], ["biomedical engineering", 6], ["human body model", 6], ["crash", 3], ["helmet", 4], ["sensor", 2], ["kinematic", 4],
-    ["matlab", 3], ["python", 2], ["simulation", 3], ["modeling", 2], ["animal model", 4], ["preclinical", 3]
+    [
+      "traumatic brain injury",
+      10
+    ],
+    [
+      "tbi",
+      9
+    ],
+    [
+      "neurotrauma",
+      10
+    ],
+    [
+      "brain injury",
+      9
+    ],
+    [
+      "concussion",
+      7
+    ],
+    [
+      "head injury",
+      8
+    ],
+    [
+      "injury biomechanics",
+      10
+    ],
+    [
+      "biomechanic",
+      7
+    ],
+    [
+      "head impact",
+      7
+    ],
+    [
+      "blast",
+      4
+    ],
+    [
+      "neurotrauma",
+      8
+    ],
+    [
+      "finite element",
+      9
+    ],
+    [
+      "finite-element",
+      9
+    ],
+    [
+      "ls-dyna",
+      10
+    ],
+    [
+      "lsdyna",
+      10
+    ],
+    [
+      "fea",
+      4
+    ],
+    [
+      "computational model",
+      7
+    ],
+    [
+      "mesh generation",
+      7
+    ],
+    [
+      "hexahedral",
+      8
+    ],
+    [
+      "image segmentation",
+      8
+    ],
+    [
+      "medical image",
+      7
+    ],
+    [
+      "mri",
+      6
+    ],
+    [
+      "segmentation",
+      5
+    ],
+    [
+      "astrocyte",
+      8
+    ],
+    [
+      "machine learning",
+      6
+    ],
+    [
+      "deep learning",
+      6
+    ],
+    [
+      "computer vision",
+      5
+    ],
+    [
+      "data scientist",
+      4
+    ],
+    [
+      "ai/ml",
+      4
+    ],
+    [
+      "neuroscience",
+      5
+    ],
+    [
+      "neuroimaging",
+      6
+    ],
+    [
+      "biomarker",
+      4
+    ],
+    [
+      "neuroengineering",
+      6
+    ],
+    [
+      "biomedical engineering",
+      6
+    ],
+    [
+      "human body model",
+      6
+    ],
+    [
+      "crash",
+      3
+    ],
+    [
+      "helmet",
+      4
+    ],
+    [
+      "sensor",
+      2
+    ],
+    [
+      "kinematic",
+      4
+    ],
+    [
+      "matlab",
+      3
+    ],
+    [
+      "python",
+      2
+    ],
+    [
+      "simulation",
+      3
+    ],
+    [
+      "modeling",
+      2
+    ],
+    [
+      "animal model",
+      4
+    ],
+    [
+      "preclinical",
+      3
+    ],
+    [
+      "engineering analysis",
+      6
+    ],
+    [
+      "tutor",
+      6
+    ],
+    [
+      "tutoring",
+      6
+    ],
+    [
+      "adjunct",
+      5
+    ],
+    [
+      "lecturer",
+      5
+    ],
+    [
+      "instructor",
+      4
+    ],
+    [
+      "teaching assistant",
+      4
+    ],
+    [
+      "algebra",
+      5
+    ],
+    [
+      "calculus",
+      5
+    ],
+    [
+      "mathematics",
+      5
+    ],
+    [
+      "math",
+      4
+    ],
+    [
+      "statics",
+      4
+    ],
+    [
+      "dynamics",
+      3
+    ],
+    [
+      "mechanics",
+      3
+    ],
+    [
+      "stem",
+      3
+    ]
   ],
-  "titleBoostTerms": ["research scientist", "scientist", "biomechanic", "computational", "modeling", "machine learning", "data scientist", "engineer", "r&d", "research engineer"],
-  "phdTerms": ["ph.d", "phd", "doctorate", "doctoral"],
-  "negativeTitleTerms": ["nurse", "physician", "surgeon", "intern ", "internship", "undergraduate", "sales", "marketing", "technician", "assistant professor", "tenure", "janitor", "receptionist", "billing", "coder", "paralegal", "driver", "clinical coordinator", "therapist", "pharmacist", "counselor"],
-  "softPenaltyTerms": [["postdoc", -6], ["post-doc", -6], ["postdoctoral", -6]],
+  "titleBoostTerms": [
+    "research scientist",
+    "scientist",
+    "biomechanic",
+    "computational",
+    "modeling",
+    "machine learning",
+    "data scientist",
+    "engineer",
+    "r&d",
+    "research engineer"
+  ],
+  "phdTerms": [
+    "ph.d",
+    "phd",
+    "doctorate",
+    "doctoral"
+  ],
+  "negativeTitleTerms": [
+    "nurse",
+    "physician",
+    "surgeon",
+    "intern ",
+    "internship",
+    "undergraduate",
+    "sales",
+    "marketing",
+    "technician",
+    "assistant professor",
+    "tenure",
+    "janitor",
+    "receptionist",
+    "billing",
+    "coder",
+    "paralegal",
+    "driver",
+    "clinical coordinator",
+    "therapist",
+    "pharmacist",
+    "counselor"
+  ],
+  "softPenaltyTerms": [
+    [
+      "postdoc",
+      -6
+    ],
+    [
+      "post-doc",
+      -6
+    ],
+    [
+      "postdoctoral",
+      -6
+    ]
+  ],
   "searchQueries": [
     "traumatic brain injury biomechanics",
     "finite element head model",
@@ -22,6 +311,10 @@
     "LS-DYNA finite element engineer",
     "medical image segmentation machine learning",
     "neurotrauma research scientist",
-    "computational biomechanics PhD"
-  ]
+    "computational biomechanics PhD",
+    "math tutor part time",
+    "engineering tutor calculus physics",
+    "adjunct instructor mathematics engineering"
+  ],
+  "_teaching": "TA experience: engineering analysis, basic mathematics, algebra (undergraduate). Tutoring/part-time teaching is an accepted option."
 }

@@ -64,3 +64,8 @@ test('board discovery: slug candidates and name matching', () => {
   assert.equal(boards.boardNameMatches('Exponent', 'Spotify'), false);
   assert.equal(boards.boardNameMatches('Air Force Research Laboratory, 711th Human Performance Wing', 'Air'), false);
 });
+test('track detection and teaching relevance', () => {
+  assert.equal(finalize({ title: 'Part-time Math Tutor (Algebra, Calculus)', company: 'X', url: 'https://x' }).track, 'teaching');
+  assert.equal(finalize({ title: 'Research Scientist, TBI', company: 'X', url: 'https://x' }).track, 'research');
+  assert.ok(finalize({ title: 'Adjunct Instructor, Engineering Analysis', company: 'X', url: 'https://x', description: 'algebra, mathematics' }).relevance > 40);
+});

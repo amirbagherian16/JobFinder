@@ -5,6 +5,7 @@ A responsive web app (desktop + mobile) that finds jobs matched to a **PhD in bi
 ## Features
 - **Sort:** most relevant · most recent · distance · income high→low · income low→high (unlisted salaries always sort last)
 - **Filter:** yearly income range · distance from home (default 100 mi from San Antonio, TX) · states and cities · job type (full-time, part-time, contract, postdoc, internship, temporary) · sector · relevance · posted-within · remote · hide "U.S. citizenship required"
+- **Teaching & tutoring track:** your TA background (engineering analysis, math, algebra) counts toward matching; a *Track* filter switches between research and teaching/tutoring (adjunct, lecturer, tutor), and *Part-time* works with it. Leads include San Antonio colleges and online tutoring platforms.
 - **Map:** every job is a clickable pin (number = resume match; clustered; popup with link). Click a card's *Show on map* or a pin's *Show in list* to jump between them.
 - **Relevance score (0–100)** with the matched terms shown on each card, driven by `data/profile.json`.
 - Mobile: bottom tabs (List / Map / Filters) and a full-screen filter sheet.

@@ -4,8 +4,10 @@ const $ = (s, r = document) => r.querySelector(s);
 const ANY_RADIUS = 610;
 const TYPES = ['Full-time', 'Part-time', 'Contract', 'Postdoc', 'Internship', 'Temporary'];
 const SECTORS = ['Industry', 'Government', 'Academic'];
+const TRACKS = ['Research', 'Teaching & tutoring'];
+const trackOf = (j) => (j.track === 'teaching' ? 'Teaching & tutoring' : 'Research');
 const PAGE = 40;
-const DEFAULTS = () => ({ q: '', salMin: '', salMax: '', salUnlisted: true, radius: 100, remoteOk: true, states: [], cities: [], types: [...TYPES], sectors: [...SECTORS],
+const DEFAULTS = () => ({ q: '', salMin: '', salMax: '', salUnlisted: true, radius: 100, remoteOk: true, states: [], cities: [], types: [...TYPES], sectors: [...SECTORS], tracks: [...TRACKS],
   showPostings: true, showLeads: true, hideCit: false, minRel: 0, posted: 0, sort: 'relevance' });
 
 let DATA = null, PLACES = null, home = null, F = DEFAULTS(), shown = PAGE, activeId = null;
@@ -67,7 +69,7 @@ function multiSelect(root, label, key, options) {
   document.addEventListener('click', (e) => { if (!root.contains(e.target)) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
 }
 function initControls() {
-  chipGroup($('#typeBox'), TYPES, 'types'); chipGroup($('#sectorBox'), SECTORS, 'sectors');
+  chipGroup($('#trackBox'), TRACKS, 'tracks'); chipGroup($('#typeBox'), TYPES, 'types'); chipGroup($('#sectorBox'), SECTORS, 'sectors');
   const stateCount = {}, cityCount = {};
   DATA.jobs.forEach((j) => { if (j.state) stateCount[j.state] = (stateCount[j.state] || 0) + 1; if (j.city && j.state && !j.approxLocation) { const k = `${j.city}, ${j.state}`; cityCount[k] = (cityCount[k] || 0) + 1; } });
   multiSelect($('#stateMs'), 'States', 'states', () => Object.entries(PLACES.states).map(([ab, [name]]) => ({ value: ab, label: `${name} (${ab})`, count: stateCount[ab] || '' })).sort((a, b) => (stateCount[b.value] || 0) - (stateCount[a.value] || 0) || a.label.localeCompare(b.label)));
@@ -111,6 +113,7 @@ function syncControls(full = true) {
     $('#radius').value = F.radius; $('#minRel').value = F.minRel; $('#posted').value = F.posted; $('#sort').value = F.sort;
     $('#showPostings').checked = F.showPostings; $('#showLeads').checked = F.showLeads; $('#hideCit').checked = F.hideCit;
     $('#homeInput').value = home.label;
+    document.querySelectorAll('#trackBox .chip').forEach((b) => b.setAttribute('aria-pressed', F.tracks.includes(b.dataset.v)));
     document.querySelectorAll('#typeBox .chip').forEach((b) => b.setAttribute('aria-pressed', F.types.includes(b.dataset.v)));
     document.querySelectorAll('#sectorBox .chip').forEach((b) => b.setAttribute('aria-pressed', F.sectors.includes(b.dataset.v)));
     $('#stateMs')._refresh(); $('#cityMs')._refresh();
@@ -130,7 +133,7 @@ function compute() {
   let rows = DATA.jobs.map((j) => ({ j, d: withDistance(j) }));
   rows = rows.filter(({ j, d }) => {
     if (j.kind === 'lead' ? !F.showLeads : !F.showPostings) return false;
-    if (!F.types.includes(j.type) || !F.sectors.includes(j.sector)) return false;
+    if (!F.types.includes(j.type) || !F.sectors.includes(j.sector) || !F.tracks.includes(trackOf(j))) return false;
     if (F.hideCit && j.citizenshipRequired) return false;
     if (j.relevance < F.minRel) return false;
     if (q && !`${j.title} ${j.company} ${j.city || ''} ${j.description} ${j.matched.join(' ')}`.toLowerCase().includes(q)) return false;
@@ -177,7 +180,7 @@ function update(resetPaging) {
 function countActive() {
   const d = DEFAULTS(); let n = 0;
   if (F.q) n++; if (F.salMin !== '' || F.salMax !== '') n++; if (!F.salUnlisted) n++; if (F.radius !== (DATA.defaultRadiusMiles || 100)) n++;
-  if (F.states.length) n++; if (F.cities.length) n++; if (F.types.length !== TYPES.length) n++; if (F.sectors.length !== SECTORS.length) n++;
+  if (F.states.length) n++; if (F.cities.length) n++; if (F.types.length !== TYPES.length) n++; if (F.sectors.length !== SECTORS.length) n++; if (F.tracks.length !== TRACKS.length) n++;
   if (!F.showPostings || !F.showLeads) n++; if (F.hideCit) n++; if (F.minRel) n++; if (F.posted) n++; if (!F.remoteOk) n++;
   return n;
 }
@@ -192,7 +195,7 @@ function cardHtml({ j, d }) {
     <div class="meta"><span>📍 ${esc(loc)}${j.approxLocation ? ' (approx.)' : ''}</span>${d != null ? `<span><b>${d < 1 ? "<1" : Math.round(d)} mi</b> away</span>` : ''}
       <span>${sal ? `💰 <b>${esc(sal)}</b>` : 'Salary not listed'}</span><span>${esc(j.type)}</span>${when ? `<span>🕒 ${esc(when)}</span>` : ''}</div>
     <div class="tags">${j.kind === 'lead' ? '<span class="tag lead" title="Organization that works in your field. Open positions are not verified.">Employer lead</span>' : ''}
-      <span class="tag">${esc(j.sector)}</span>${j.citizenshipRequired ? '<span class="tag warn">U.S. citizenship may be required</span>' : ''}${j.remote ? '<span class="tag">Remote</span>' : ''}
+      <span class="tag">${esc(j.sector)}</span>${j.track === 'teaching' ? '<span class="tag">Teaching &amp; tutoring</span>' : ''}${j.citizenshipRequired ? '<span class="tag warn">U.S. citizenship may be required</span>' : ''}${j.remote ? '<span class="tag">Remote</span>' : ''}
       ${j.matched.slice(0, 4).map((m) => `<span class="tag">${esc(m)}</span>`).join('')}</div>
     <div class="rel" title="How closely this matches your resume"><span>Match ${j.relevance}</span><div class="bar"><i style="width:${j.relevance}%"></i></div></div>
     <p class="desc">${esc(j.description)}</p>
