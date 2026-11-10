@@ -1,6 +1,6 @@
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict');
-const { yearly, mapType, finalize, dedupe } = require('../lib/normalize');
+const { yearly, mapType, finalize, dedupe, withLocation } = require('../lib/normalize');
 const { resolveLocation, haversineMiles } = require('../lib/geo');
 const { score } = require('../lib/relevance');
 const adzuna = require('../lib/providers/adzuna'), usajobs = require('../lib/providers/usajobs'), jsearch = require('../lib/providers/jsearch'), boards = require('../lib/providers/boards');
@@ -68,4 +68,8 @@ test('track detection and teaching relevance', () => {
   assert.equal(finalize({ title: 'Part-time Math Tutor (Algebra, Calculus)', company: 'X', url: 'https://x' }).track, 'teaching');
   assert.equal(finalize({ title: 'Research Scientist, TBI', company: 'X', url: 'https://x' }).track, 'research');
   assert.ok(finalize({ title: 'Adjunct Instructor, Engineering Analysis', company: 'X', url: 'https://x', description: 'algebra, mathematics' }).relevance > 40);
+});
+test('precision flag: API coordinates are precise, city lookups are not', () => {
+  assert.equal(finalize(withLocation({ title: 'x', company: 'c', url: 'https://x', lat: 29.5, lon: -98.6 }, 'x')).precise, true);
+  assert.equal(finalize(withLocation({ title: 'x', company: 'c', url: 'https://x' }, 'San Antonio, TX')).precise, false);
 });

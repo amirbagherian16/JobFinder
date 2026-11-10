@@ -86,13 +86,35 @@ function initControls() {
   $('#homeInput').addEventListener('change', (e) => {
     const m = e.target.value.trim().toLowerCase();
     const hit = PLACES.cities.find(([c, s]) => `${c}, ${s}`.toLowerCase() === m) || PLACES.cities.find(([c]) => c.toLowerCase() === m);
-    if (hit) setHome({ city: hit[0], state: hit[1], lat: hit[2], lon: hit[3], label: `${hit[0]}, ${hit[1]}` });
+    if (hit) setHome({ city: hit[0], state: hit[1], lat: hit[2], lon: hit[3], label: `${hit[0]}, ${hit[1]}`, precise: false });
     else e.target.value = home.label;
   });
   $('#geoBtn').addEventListener('click', () => {
     if (!navigator.geolocation) return alert('Geolocation is not available in this browser.');
-    navigator.geolocation.getCurrentPosition((p) => setHome({ lat: p.coords.latitude, lon: p.coords.longitude, label: 'My location' }), () => alert('Could not get your location. Type a city instead.'), { timeout: 8000 });
+    navigator.geolocation.getCurrentPosition((p) => setHome({ lat: p.coords.latitude, lon: p.coords.longitude, label: 'My location', precise: true }), () => alert('Could not get your location. Type a city instead.'), { timeout: 8000 });
   });
+
+  // exact home address (geocoded in the browser; stored only in localStorage)
+  let found = null;
+  const dlg = $('#addrDlg'), res = $('#addrResult'), use = $('#addrUse');
+  $('#addrBtn').addEventListener('click', () => { res.textContent = home.precise ? `Currently: ${home.label}` : ''; use.disabled = true; found = null; dlg.showModal(); $('#addrInput').focus(); });
+  $('#addrInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#addrFind').click(); } });
+  $('#addrFind').addEventListener('click', async () => {
+    const raw = $('#addrInput').value.trim(); if (!raw) return;
+    use.disabled = true; found = null; res.textContent = 'Looking up…';
+    const ll = raw.match(/^\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/);
+    if (ll) { found = { lat: +ll[1], lon: +ll[2], label: 'My location' }; res.textContent = `Using coordinates ${ll[1]}, ${ll[2]}`; use.disabled = false; return; }
+    const q = raw.replace(/\b(apt|apartment|unit|suite|ste|#)\.?\s*[\w-]+/ig, '').replace(/\s{2,}/g, ' ').replace(/,\s*,/g, ',').trim();
+    try {
+      const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&addressdetails=1&q=' + encodeURIComponent(q), { headers: { Accept: 'application/json' } });
+      const [hit] = await r.json();
+      if (!hit) { res.textContent = 'No match. Try “street, city, ST ZIP”, or paste coordinates as “lat, lon” (right-click your spot in Google Maps).'; return; }
+      const exact = hit.address?.house_number != null;
+      found = { lat: +hit.lat, lon: +hit.lon, label: 'My address' };
+      res.textContent = `${exact ? 'Exact building' : 'Street-level match (building number not found)'}: ${hit.display_name}`; use.disabled = false;
+    } catch { res.textContent = 'Could not reach the address lookup. Paste coordinates as “lat, lon” instead.'; }
+  });
+  use.addEventListener('click', () => { if (found) { setHome({ ...found, precise: true }); dlg.close(); } });
 
   // mobile navigation
   document.querySelectorAll('.tab[data-view]').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
@@ -121,7 +143,7 @@ function syncControls(full = true) {
   $('#radius').value = F.radius;
   $('#radiusOut').textContent = F.radius >= ANY_RADIUS ? 'Any' : `${F.radius} mi`;
   $('#minRelOut').textContent = F.minRel ? `≥ ${F.minRel}` : 'Any';
-  $('#radiusHint').textContent = F.radius >= ANY_RADIUS ? (F.states.length || F.cities.length ? 'Distance limit is off while states/cities are selected. Drag left to re-enable.' : 'No distance limit.') : `Within ${F.radius} miles of ${home.label}.`;
+  $('#radiusHint').textContent = F.radius >= ANY_RADIUS ? (F.states.length || F.cities.length ? 'Distance limit is off while states/cities are selected. Drag left to re-enable.' : 'No distance limit.') : `Within ${F.radius} straight-line miles of ${home.label}${home.precise ? '' : ' (city centre; tap 🏠 to set your exact address)'}.`;
   $('#stateMs')._refresh?.(); $('#cityMs')._refresh?.();
 }
 
@@ -186,13 +208,18 @@ function countActive() {
 }
 
 // ---------- list ----------
+// Google Maps directions from the saved home to the job: exact coords when the source gave them, otherwise the employer's name + city.
+function dirUrl(j) {
+  const dest = j.precise && j.lat != null ? `${j.lat},${j.lon}` : `${j.company.replace(/\s*\(.*?\)/g, '')} ${j.city || ''} ${j.state || ''}`.trim();
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(home.lat + ',' + home.lon)}&destination=${encodeURIComponent(dest)}&travelmode=driving`;
+}
 function cardHtml({ j, d }) {
   const sal = salaryText(j), when = ago(j);
   const loc = j.remote ? 'Remote' : [j.city, j.state].filter(Boolean).join(', ') || 'Location not specified';
   const links = j.links;
   return `<li class="card ${j.id === activeId ? 'active' : ''}" data-id="${esc(j.id)}">
     <h3>${esc(j.title)}</h3><div class="org">${esc(j.company)}${j.via ? ` · via ${esc(j.via)}` : ''}</div>
-    <div class="meta"><span>📍 ${esc(loc)}${j.approxLocation ? ' (approx.)' : ''}</span>${d != null ? `<span><b>${d < 1 ? "<1" : Math.round(d)} mi</b> away</span>` : ''}
+    <div class="meta"><span>📍 ${esc(loc)}${j.approxLocation ? ' (approx.)' : ''}</span>${d != null ? `<span title="Straight-line distance${j.precise ? '' : ' to the centre of ' + (j.city || 'the area') + ' (exact address unknown)'}"><b>${j.precise ? '' : '~'}${d < 1 ? '<1' : Math.round(d)} mi</b> straight-line</span>` : ''}
       <span>${sal ? `💰 <b>${esc(sal)}</b>` : 'Salary not listed'}</span><span>${esc(j.type)}</span>${when ? `<span>🕒 ${esc(when)}</span>` : ''}</div>
     <div class="tags">${j.kind === 'lead' ? '<span class="tag lead" title="Organization that works in your field. Open positions are not verified.">Employer lead</span>' : ''}
       <span class="tag">${esc(j.sector)}</span>${j.track === 'teaching' ? '<span class="tag">Teaching &amp; tutoring</span>' : ''}${j.citizenshipRequired ? '<span class="tag warn">U.S. citizenship may be required</span>' : ''}${j.remote ? '<span class="tag">Remote</span>' : ''}
@@ -201,7 +228,7 @@ function cardHtml({ j, d }) {
     <p class="desc">${esc(j.description)}</p>
     <div class="actions"><a class="main" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">${j.kind === 'lead' ? 'Careers page' : 'View job'}</a>
       ${links ? `<a href="${esc(links.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="${esc(links.indeed)}" target="_blank" rel="noopener noreferrer">Indeed</a><a href="${esc(links.google)}" target="_blank" rel="noopener noreferrer">Google</a>` : ''}
-      ${j.lat != null && !j.remote ? '<button type="button" data-act="map">Show on map</button>' : ''}</div></li>`;
+      ${j.lat != null && !j.remote ? '<button type="button" data-act="map">Show on map</button>' : ''}${j.remote ? '' : `<a href="${esc(dirUrl(j))}" target="_blank" rel="noopener noreferrer">Directions</a>`}</div></li>`;
 }
 function renderList() {
   const list = $('#list');
