@@ -9,6 +9,8 @@ A responsive web app (desktop + mobile) that finds jobs matched to a **PhD in bi
 - **Relevance score (0–100)** with the matched terms shown on each card, driven by `data/profile.json`.
 - Mobile: bottom tabs (List / Map / Filters) and a full-screen filter sheet.
 
+**No API keys are required.** Out of the box the site shows the curated employer leads and any open roles found on those employers' public Greenhouse boards. The paid/keyed sources below are optional extras.
+
 ## Where the jobs come from (and what is *not* possible)
 LinkedIn and Indeed forbid scraping and block it, so this project does **not** scrape them. Instead:
 
@@ -17,7 +19,7 @@ LinkedIn and Indeed forbid scraping and block it, so this project does **not** s
 | **JSearch (RapidAPI)**: Google for Jobs, which includes LinkedIn, Indeed, Glassdoor, ZipRecruiter | `lib/providers/jsearch.js` | `RAPIDAPI_KEY` |
 | **Adzuna**: large multi-board aggregator | `lib/providers/adzuna.js` | `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` (free) |
 | **USAJOBS**: NIH, FDA, DoD labs, NASA… | `lib/providers/usajobs.js` | `USAJOBS_API_KEY`, `USAJOBS_EMAIL` (free) |
-| **Greenhouse / Lever** company boards | `lib/providers/boards.js` | add slugs to `data/boards.json` (no key) |
+| **Greenhouse company boards**: auto-discovered for each employer lead, plus any slugs in `data/boards.json` (Lever too) | `lib/providers/boards.js` | **nothing, no key** |
 | **Employer leads** (34 curated organizations in your field) | `data/employers.json` | nothing |
 | **LinkedIn / Indeed / Google Jobs deep links** | pre-filled search buttons on every lead and in the list header | nothing |
 

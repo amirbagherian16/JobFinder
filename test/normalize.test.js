@@ -55,3 +55,11 @@ test('finalize strips HTML and detects citizenship wording; dedupe keeps salary'
   const a = finalize({ title: 'Eng', company: 'Co', city: 'Austin', url: 'https://a' }), b = finalize({ title: 'Eng', company: 'Co', city: 'Austin', url: 'https://b', salaryMin: 100000, salaryMax: 120000 });
   assert.equal(dedupe([a, b]).length, 1); assert.equal(dedupe([a, b])[0].salaryMin, 100000);
 });
+test('board discovery: slug candidates and name matching', () => {
+  assert.ok(boards.slugCandidates('Quanterix').includes('quanterix'));
+  assert.ok(boards.slugCandidates('General Motors').includes('generalmotors'));
+  assert.equal(boards.boardNameMatches('Quanterix', 'Quanterix Corporation'), true);
+  assert.equal(boards.boardNameMatches('Ford Motor Company', 'Ford Foundation'), false);
+  assert.equal(boards.boardNameMatches('Ford Motor Company', 'Ford Motor'), true);
+  assert.equal(boards.boardNameMatches('Exponent', 'Spotify'), false);
+});
