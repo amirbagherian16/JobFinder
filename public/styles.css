@@ -110,3 +110,5 @@ legend{font-weight:700;font-size:13px;padding:0 6px 0 0;color:var(--muted);text-
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:18px;width:min(440px,92vw)}
 dialog::backdrop{background:rgba(0,0,0,.45)}dialog h2{font-size:17px;margin-bottom:6px}
 .homebar{align-items:center}.homebar #homeInput{min-width:0}
+.pin.sel{box-shadow:0 0 0 4px rgba(37,99,235,.55),0 2px 8px rgba(0,0,0,.5);width:38px;height:38px;font-size:14px}
+.card{cursor:pointer}

@@ -240,7 +240,7 @@ function renderList() {
 $('#list').addEventListener('click', (e) => {
   const li = e.target.closest('.card'); if (!li) return;
   if (e.target.closest('a')) return;
-  focusJob(li.dataset.id, e.target.closest('[data-act=map]') != null);
+  focusJob(li.dataset.id, true);
 });
 
 // ---------- map ----------
@@ -272,7 +272,8 @@ function renderMap() {
     if (j.lat == null) { unlocated++; continue; }
     const m = L.marker([j.lat, j.lon], { icon: L.divIcon({ className: '', html: `<div class="pin ${relClass(j.relevance)} ${j.kind === 'lead' ? 'lead' : ''}"><span>${j.relevance}</span></div>`, iconSize: [32, 32], iconAnchor: [16, 30], popupAnchor: [0, -28] }), title: `${j.title} · ${j.company}` });
     m.bindPopup(() => popupHtml(r), { maxWidth: 280 });
-    m.on('click', () => { activeId = j.id; markActive(false); });
+    m.on('click', () => { activeId = j.id; markActive(false); setTimeout(() => highlightPin(m), 0); });
+    m.on('popupclose', () => { if (selPin && m._icon?.contains(selPin)) { selPin.classList.remove('sel'); selPin = null; } });
     markers.set(j.id, m); ms.push(m);
   }
   cluster.addLayers(ms);
@@ -296,16 +297,27 @@ function markActive(scroll) {
   const li = [...document.querySelectorAll('.card')].find((c) => c.dataset.id === activeId);
   if (li) { li.classList.add('active'); if (scroll) li.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
 }
+let selPin = null;
+function highlightPin(m) {
+  selPin?.classList.remove('sel'); selPin = m?._icon?.querySelector('.pin') || null; selPin?.classList.add('sel');
+}
 function focusJob(id, openMap) {
   activeId = id;
   const idx = rows.findIndex((r) => r.j.id === id);
   if (idx >= shown) { shown = idx + PAGE; renderList(); }
   markActive(!openMap);
-  const m = markers.get(id);
-  if (openMap && m) {
-    if (getComputedStyle($('.mapwrap')).display === 'none') setView('map');
-    setTimeout(() => { map.invalidateSize(); cluster.zoomToShowLayer(m, () => { map.setView(m.getLatLng(), Math.max(map.getZoom(), 10)); m.openPopup(); }); }, 80);
+  if (!openMap) return;
+  const m = markers.get(id), row = rows[idx];
+  if (!m) { // remote or no coordinates: nothing to pin
+    const note = $('#mapNote'); note.textContent = row?.j.remote ? 'This job is remote, so it has no map location.' : 'This job has no map location.'; note.hidden = false;
+    return;
   }
+  if (getComputedStyle($('.mapwrap')).display === 'none') setView('map');
+  setTimeout(() => {
+    map.invalidateSize();
+    map.setView(m.getLatLng(), Math.max(map.getZoom(), 12), { animate: false });
+    cluster.zoomToShowLayer(m, () => { m.openPopup(); setTimeout(() => highlightPin(m), 0); });
+  }, 80);
 }
 
 // ---------- web search deep links ----------
