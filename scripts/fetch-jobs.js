@@ -31,7 +31,7 @@ async function main() {
     if (!p.enabled()) { log(`- ${p.name}: skipped (no credentials/config)`); continue; }
     log(`- ${p.name}: fetching...`);
     try {
-      const got = await p.fetchJobs({ queries: profile.searchQueries, home: profile.home, log });
+      const got = await p.fetchJobs({ queries: profile.searchQueries, home: profile.home, log, orgs: employers.map((e) => e.org.replace(/\s*\(.*\)/, '')) });
       const kept = got.filter((j) => j.url && j.relevance >= MIN_LIVE_RELEVANCE);
       sources[p.name] = kept.length;
       live.push(...kept);
