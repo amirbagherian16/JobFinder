@@ -256,7 +256,7 @@ function updateHomeMarker() {
 }
 function popupHtml({ j, d }) {
   const sal = salaryText(j);
-  return `<h4>${esc(j.title)}</h4><div class="pm"><b>${esc(j.company)}</b></div><div class="pm">${esc([j.city, j.state].filter(Boolean).join(', '))}${d != null ? ` · ${Math.round(d)} mi` : ''}</div>
+  return `<h4>${esc(j.title)}</h4><div class="pm"><b>${esc(j.company)}</b></div><div class="pm">${esc([j.city, j.state].filter(Boolean).join(', '))}${d != null ? ` · ${j.precise ? '' : '~'}${Math.round(d)} mi` : ''}</div>${j.precise ? '' : '<div class="pm"><i>Approximate pin: exact street address not found</i></div>'}
     <div class="pm">${sal ? esc(sal) : 'Salary not listed'} · ${esc(j.type)} · Match ${j.relevance}</div>${j.kind === 'lead' ? '<div class="pm"><i>Employer lead: the button opens their current job ads</i></div>' : ''}
     <a class="go" href="${esc(j.links ? j.links.google : safeUrl(j.url))}" target="_blank" rel="noopener noreferrer">${j.kind === 'lead' ? 'See open jobs' : 'View job posting'}</a><button class="sc" type="button" data-sc="${esc(j.id)}">Show in list</button>`;
 }
