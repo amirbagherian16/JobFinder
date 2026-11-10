@@ -19,6 +19,7 @@
     <label for="homeInput" class="sr">Home location</label>
     <input id="homeInput" list="placeList" placeholder="Home city, ST" autocomplete="off" inputmode="text">
     <datalist id="placeList"></datalist>
+    <button id="addrBtn" type="button" class="ghost" title="Set my exact home address" aria-label="Set my exact home address">🏠</button>
     <button id="geoBtn" type="button" class="ghost" title="Use my current location" aria-label="Use my current location">◎</button>
   </div>
 </header>
@@ -76,7 +77,7 @@
         <select id="sort">
           <option value="relevance">Most relevant</option>
           <option value="recent">Most recent</option>
-          <option value="distance">Distance: nearest</option>
+          <option value="distance">Distance: nearest (straight-line)</option>
           <option value="salaryDesc">Income: high → low</option>
           <option value="salaryAsc">Income: low → high</option>
         </select>
@@ -101,6 +102,17 @@
     <div id="mapNote" class="map-note" hidden></div>
   </section>
 </main>
+
+<dialog id="addrDlg" aria-labelledby="addrTitle">
+  <form method="dialog" id="addrForm">
+    <h2 id="addrTitle">Your exact home location</h2>
+    <p class="hint">Used only to measure distances. It is looked up from your browser and saved <b>only on this device</b>; it is never stored in the repository or sent to our site.</p>
+    <label class="field"><span>Street address (apartment number not needed)</span><input id="addrInput" type="text" autocomplete="street-address" placeholder="Street, City, ST ZIP  (or: lat, lon)"></label>
+    <button id="addrFind" type="button" class="primary wide">Find location</button>
+    <p id="addrResult" class="hint" aria-live="polite"></p>
+    <div class="row2"><button id="addrUse" type="button" class="primary" disabled>Use this location</button><button value="cancel" class="ghost">Close</button></div>
+  </form>
+</dialog>
 
 <nav class="tabbar" aria-label="View">
   <button data-view="list" class="tab on" type="button">☰ List</button>

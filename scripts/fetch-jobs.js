@@ -16,7 +16,7 @@ function buildLeads() {
     const loc = `${e.city}, ${e.state}`;
     return finalize(withLocation({
       id: 'lead-' + e.org.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40), kind: 'lead', title: e.title, company: e.org, city: e.city, state: e.state,
-      sector: e.sector, type: e.type || 'Full-time', remote: !!e.remote, track: e.track, url: e.url, description: e.focus, tags: e.terms.split(' '), source: 'curated', citizenshipRequired: e.cit,
+      lat: e.lat ?? null, lon: e.lon ?? null, precise: false, sector: e.sector, type: e.type || 'Full-time', remote: !!e.remote, track: e.track, url: e.url, description: e.focus, tags: e.terms.split(' '), source: 'curated', citizenshipRequired: e.cit,
       links: { linkedin: links.linkedin(q, loc), indeed: links.indeed(q, loc), google: links.google(q, loc) },
     }, loc));
   });
