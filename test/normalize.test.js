@@ -83,3 +83,21 @@ test('geocode: parses Nominatim result and rejects implausible matches', async (
   assert.equal(plausible({ lat: 40.7, lon: -74 }, sa), false); // wrong city (New York)
   assert.equal(await geocode('nowhere', { fetchImpl: async () => ({ ok: true, json: async () => [] }), delayMs: 0 }), null);
 });
+test('careers crawler: JSON-LD parsing, link extraction, robots.txt', () => {
+  const careers = require('../lib/providers/careers');
+  const html = `<html><a href="/jobs/123-biomechanics-scientist">x</a><a href="https://other.test/a.pdf">p</a>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"JobPosting","title":"Research Scientist, TBI Biomechanics","url":"https://careers.example.org/jobs/123","datePosted":"2026-11-01",
+    "employmentType":"FULL_TIME","hiringOrganization":{"name":"Example"},"jobLocation":{"address":{"addressLocality":"San Antonio","addressRegion":"TX"}},
+    "baseSalary":{"value":{"minValue":95000,"maxValue":120000,"unitText":"YEAR"}},"description":"<p>PhD, finite element, traumatic brain injury</p>"}</script>
+    <script type="application/ld+json">{"@graph":[{"@type":"Organization"},{"@type":["JobPosting"],"title":"Math Tutor","url":"https://careers.example.org/jobs/9"}]}</script>
+    <script type="application/ld+json">{bad json</script></html>`;
+  const posts = careers.parseJobPostings(html, 'https://careers.example.org/jobs');
+  assert.equal(posts.length, 2);
+  const j = careers.toJob(posts[0], { org: 'Example Org', sector: 'Industry', city: 'San Antonio', state: 'TX' });
+  assert.equal(j.url, 'https://careers.example.org/jobs/123'); assert.equal(j.salaryMin, 95000); assert.equal(j.state, 'TX'); assert.equal(j.source, 'careers'); assert.ok(j.relevance > 40);
+  const links = careers.extractLinks(html, 'https://careers.example.org/');
+  assert.deepEqual(links, ['https://careers.example.org/jobs/123-biomechanics-scientist']);
+  assert.equal(careers.robotsAllows('User-agent: *\nDisallow: /private\n', '/private/x'), false);
+  assert.equal(careers.robotsAllows('User-agent: *\nDisallow: /private\nAllow: /private/ok\n', '/private/ok/1'), true);
+  assert.equal(careers.robotsAllows('User-agent: *\nDisallow:\n', '/jobs'), true);
+});
