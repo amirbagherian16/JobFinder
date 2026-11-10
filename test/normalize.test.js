@@ -101,3 +101,16 @@ test('careers crawler: JSON-LD parsing, link extraction, robots.txt', () => {
   assert.equal(careers.robotsAllows('User-agent: *\nDisallow: /private\nAllow: /private/ok\n', '/private/ok/1'), true);
   assert.equal(careers.robotsAllows('User-agent: *\nDisallow:\n', '/jobs'), true);
 });
+test('lead location tiers: address -> name -> nearby area (flagged approximate)', async () => {
+  const { locateLead } = require('../scripts/fetch-jobs');
+  const sa = { lat: 29.55, lon: -98.60 };
+  const e = { org: 'Acme Corp', city: 'San Antonio', state: 'TX', address: '1 Main St, San Antonio, TX', area: 'De Zavala Rd, San Antonio, TX', areaNote: 'Near De Zavala Rd' };
+  const tried = [];
+  const onlyArea = async (q) => { tried.push(q); return q.startsWith('De Zavala') ? sa : null; };
+  const r = await locateLead(e, onlyArea);
+  assert.deepEqual(tried, ['1 Main St, San Antonio, TX', 'Acme Corp, San Antonio, TX', 'De Zavala Rd, San Antonio, TX']);
+  assert.equal(r.exact, false); assert.equal(r.note, 'Near De Zavala Rd');
+  const byAddr = await locateLead(e, async (q) => (q.startsWith('1 Main') ? sa : null)); assert.equal(byAddr.exact, true); assert.equal(byAddr.note, null);
+  assert.equal(await locateLead(e, async () => null), null);
+  assert.equal(await locateLead(e, async () => ({ lat: 40.7, lon: -74 })), null, 'wrong-city match rejected');
+});
