@@ -62,4 +62,5 @@ test('board discovery: slug candidates and name matching', () => {
   assert.equal(boards.boardNameMatches('Ford Motor Company', 'Ford Foundation'), false);
   assert.equal(boards.boardNameMatches('Ford Motor Company', 'Ford Motor'), true);
   assert.equal(boards.boardNameMatches('Exponent', 'Spotify'), false);
+  assert.equal(boards.boardNameMatches('Air Force Research Laboratory, 711th Human Performance Wing', 'Air'), false);
 });
