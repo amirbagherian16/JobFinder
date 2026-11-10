@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JobFinder · TBI &amp; Biomechanics</title>
+<meta name="description" content="Find jobs matched to a TBI / injury-biomechanics / computational-modeling PhD profile. Sort, filter and explore on a map.">
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ccircle cx='32' cy='28' r='12' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='M32 52 L22 36 h20z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="vendor/MarkerCluster.css">
+<link rel="stylesheet" href="vendor/MarkerCluster.Default.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-view="list">
+<header class="topbar">
+  <div class="brand"><span class="logo" aria-hidden="true"></span><div><h1>JobFinder</h1><small id="updated">Loading…</small></div></div>
+  <div class="homebar">
+    <label for="homeInput" class="sr">Home location</label>
+    <input id="homeInput" list="placeList" placeholder="Home city, ST" autocomplete="off" inputmode="text">
+    <datalist id="placeList"></datalist>
+    <button id="geoBtn" type="button" class="ghost" title="Use my current location" aria-label="Use my current location">◎</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside id="filters" class="panel filters" aria-label="Filters">
+    <div class="sheet-head"><h2>Filters</h2><button id="closeFilters" class="ghost" type="button" aria-label="Close filters">✕</button></div>
+    <div class="scroll">
+      <label class="field"><span>Search</span><input id="q" type="search" placeholder="Title, company, keyword"></label>
+
+      <fieldset><legend>Income (yearly)</legend>
+        <div class="row2">
+          <label class="field"><span>Min $</span><input id="salMin" type="number" min="0" step="5000" placeholder="0" inputmode="numeric"></label>
+          <label class="field"><span>Max $</span><input id="salMax" type="number" min="0" step="5000" placeholder="any" inputmode="numeric"></label>
+        </div>
+        <label class="check"><input id="salUnlisted" type="checkbox" checked> Include jobs with no salary listed</label>
+      </fieldset>
+
+      <fieldset><legend>Distance from home</legend>
+        <div class="range"><input id="radius" type="range" min="10" max="610" step="10" aria-label="Distance radius in miles"><output id="radiusOut"></output></div>
+        <label class="check"><input id="remoteOk" type="checkbox" checked> Include remote jobs</label>
+        <p class="hint" id="radiusHint"></p>
+      </fieldset>
+
+      <fieldset><legend>Location</legend>
+        <div class="ms" id="stateMs"></div>
+        <div class="ms" id="cityMs"></div>
+      </fieldset>
+
+      <fieldset><legend>Job type</legend><div id="typeBox" class="chips"></div></fieldset>
+      <fieldset><legend>Sector</legend><div id="sectorBox" class="chips"></div></fieldset>
+
+      <fieldset><legend>Listing</legend>
+        <label class="check"><input id="showPostings" type="checkbox" checked> Live postings</label>
+        <label class="check"><input id="showLeads" type="checkbox" checked> Employer leads (check their careers page)</label>
+        <label class="check"><input id="hideCit" type="checkbox"> Hide “U.S. citizenship required”</label>
+      </fieldset>
+
+      <fieldset><legend>Relevance &amp; recency</legend>
+        <div class="range"><input id="minRel" type="range" min="0" max="90" step="5" aria-label="Minimum relevance"><output id="minRelOut"></output></div>
+        <label class="field"><span>Posted within</span>
+          <select id="posted"><option value="0">Any time</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option></select>
+        </label>
+      </fieldset>
+      <button id="reset" type="button" class="ghost wide">Reset filters</button>
+    </div>
+    <div class="sheet-foot"><button id="applyFilters" type="button" class="primary wide">Show <span id="countBtn">0</span> jobs</button></div>
+  </aside>
+
+  <section class="panel results" aria-label="Results">
+    <div class="toolbar">
+      <div><strong id="count" aria-live="polite">0 jobs</strong><span id="sub" class="muted"></span></div>
+      <label class="sort"><span class="sr">Sort by</span>
+        <select id="sort">
+          <option value="relevance">Most relevant</option>
+          <option value="recent">Most recent</option>
+          <option value="distance">Distance: nearest</option>
+          <option value="salaryDesc">Income: high → low</option>
+          <option value="salaryAsc">Income: low → high</option>
+        </select>
+      </label>
+    </div>
+    <details class="websearch">
+      <summary>Search LinkedIn, Indeed &amp; Google Jobs for my profile</summary>
+      <div class="ws-body">
+        <label class="field"><span>Search for</span><select id="wsQuery"></select></label>
+        <label class="field"><span>Where</span><select id="wsWhere"><option value="home">Near my home location</option><option value="us">Anywhere in the U.S.</option></select></label>
+        <div class="row3"><a id="wsLi" target="_blank" rel="noopener" class="btn">LinkedIn</a><a id="wsIn" target="_blank" rel="noopener" class="btn">Indeed</a><a id="wsGo" target="_blank" rel="noopener" class="btn">Google Jobs</a></div>
+        <p class="hint">These sites don’t allow automated scraping, so each button opens a pre-filled search (newest first) in a new tab.</p>
+      </div>
+    </details>
+    <div id="notice" class="notice" hidden></div>
+    <ul id="list" class="list"></ul>
+    <button id="more" class="ghost wide" type="button" hidden>Show more</button>
+  </section>
+
+  <section class="panel mapwrap" aria-label="Map">
+    <div id="map" role="application" aria-label="Map of job locations"></div>
+    <div id="mapNote" class="map-note" hidden></div>
+  </section>
+</main>
+
+<nav class="tabbar" aria-label="View">
+  <button data-view="list" class="tab on" type="button">☰ List</button>
+  <button data-view="map" class="tab" type="button">🗺 Map</button>
+  <button id="openFilters" class="tab" type="button">⚙ Filters<span id="fbadge" class="badge" hidden></span></button>
+</nav>
+
+<script src="vendor/leaflet.js"></script>
+<script src="vendor/leaflet.markercluster.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

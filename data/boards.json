@@ -1,0 +1,5 @@
+{
+  "_note": "Add company slugs from boards.greenhouse.io/<slug> or jobs.lever.co/<slug>. Only roles scoring above the relevance cutoff are kept.",
+  "greenhouse": [],
+  "lever": []
+}
