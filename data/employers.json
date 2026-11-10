@@ -10,7 +10,10 @@
       "title": "Research scientist / engineer roles: biosciences, bioengineering & mechanical modeling",
       "focus": "Nonprofit R&D institute in San Antonio with biosciences and bioengineering, biomechanics and blast/impact research, computational modeling, and machine learning for engineering and medical applications.",
       "terms": "biomechanics finite element simulation machine learning research scientist",
-      "cit": false
+      "cit": false,
+      "address": "6220 Culebra Rd, San Antonio, TX 78238",
+      "lat": 29.4449,
+      "lon": -98.6293
     },
     {
       "org": "Biodynamic Research Corporation",
@@ -21,7 +24,8 @@
       "title": "Injury biomechanics engineer / scientist",
       "focus": "San Antonio biomechanics and injury-causation consulting firm doing impact testing, head and brain injury analysis, and injury biomechanics research.",
       "terms": "injury biomechanics head injury impact testing",
-      "cit": false
+      "cit": false,
+      "address": "Biodynamic Research Corporation, San Antonio, TX"
     },
     {
       "org": "UT Health San Antonio",
@@ -32,7 +36,10 @@
       "title": "Research scientist / staff scientist: neurotrauma, imaging & data science",
       "focus": "Health science center with neurosurgery, neuroscience and imaging research, including traumatic brain injury and military-relevant neurotrauma programs.",
       "terms": "traumatic brain injury neuroscience imaging research scientist",
-      "cit": false
+      "cit": false,
+      "address": "7703 Floyd Curl Dr, San Antonio, TX 78229",
+      "lat": 29.5082,
+      "lon": -98.5762
     },
     {
       "org": "Texas Biomedical Research Institute",
@@ -43,7 +50,10 @@
       "title": "Research scientist / computational biologist",
       "focus": "Independent biomedical research institute with preclinical and animal-model research and computational biology groups.",
       "terms": "preclinical animal model computational research scientist",
-      "cit": false
+      "cit": false,
+      "address": "8715 W Military Dr, San Antonio, TX 78227",
+      "lat": 29.4195,
+      "lon": -98.716
     },
     {
       "org": "U.S. Army Institute of Surgical Research (JBSA Fort Sam Houston)",
@@ -54,7 +64,10 @@
       "title": "Research biomedical engineer / physiologist (federal)",
       "focus": "DoD trauma research laboratory in San Antonio focused on combat casualty care, injury modeling and physiologic data analytics. Federal hiring runs through USAJOBS.",
       "terms": "trauma injury research biomedical engineer",
-      "cit": true
+      "cit": true,
+      "address": "3698 Chambers Pass, Fort Sam Houston, TX 78234",
+      "lat": 29.459,
+      "lon": -98.435
     },
     {
       "org": "Air Force Research Laboratory, 711th Human Performance Wing (JBSA-Brooks)",
@@ -65,7 +78,10 @@
       "title": "Research scientist / bioengineer (federal & contractor)",
       "focus": "Air Force human performance and biodynamics research in San Antonio, including injury and biomechanics. Many roles are federal or contractor and often require U.S. citizenship.",
       "terms": "biodynamics human performance injury bioengineer",
-      "cit": true
+      "cit": true,
+      "address": "2510 Kennedy Cir, San Antonio, TX 78235",
+      "lat": 29.34,
+      "lon": -98.458
     },
     {
       "org": "Applied Research Laboratories, UT Austin",
@@ -109,7 +125,10 @@
       "title": "Biomechanics / human-system modeling (civil servant & contractor)",
       "focus": "Human Research Program and crew-safety work including injury risk modeling and occupant protection; many roles via contractors.",
       "terms": "injury biomechanics occupant protection modeling",
-      "cit": true
+      "cit": true,
+      "address": "2101 NASA Parkway, Houston, TX 77058",
+      "lat": 29.5518,
+      "lon": -95.098
     },
     {
       "org": "Sandia National Laboratories",
@@ -387,7 +406,10 @@
       "cit": false,
       "type": "Part-time",
       "remote": false,
-      "track": "teaching"
+      "track": "teaching",
+      "address": "2222 N Alamo St, San Antonio, TX 78215",
+      "lat": 29.444,
+      "lon": -98.49
     },
     {
       "org": "UTSA (instructional & tutoring roles)",
@@ -403,7 +425,8 @@
       "remote": false,
       "track": "teaching",
       "lat": 29.583,
-      "lon": -98.6195
+      "lon": -98.6195,
+      "address": "One UTSA Circle, San Antonio, TX 78249"
     },
     {
       "org": "St. Mary's University",
@@ -417,7 +440,10 @@
       "cit": false,
       "type": "Part-time",
       "remote": false,
-      "track": "teaching"
+      "track": "teaching",
+      "address": "One Camino Santa Maria, San Antonio, TX 78228",
+      "lat": 29.4535,
+      "lon": -98.5628
     },
     {
       "org": "Trinity University",
@@ -431,7 +457,10 @@
       "cit": false,
       "type": "Part-time",
       "remote": false,
-      "track": "teaching"
+      "track": "teaching",
+      "address": "One Trinity Place, San Antonio, TX 78212",
+      "lat": 29.4614,
+      "lon": -98.4833
     },
     {
       "org": "Texas A&M University-San Antonio",
@@ -445,7 +474,10 @@
       "cit": false,
       "type": "Part-time",
       "remote": false,
-      "track": "teaching"
+      "track": "teaching",
+      "address": "One University Way, San Antonio, TX 78224",
+      "lat": 29.3225,
+      "lon": -98.5895
     },
     {
       "org": "Wyzant (online tutoring marketplace)",

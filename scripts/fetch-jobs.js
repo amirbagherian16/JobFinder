@@ -5,26 +5,45 @@ const profile = require('../data/profile.json');
 const { employers } = require('../data/employers.json');
 const { finalize, withLocation, dedupe } = require('../lib/normalize');
 const links = require('../lib/links');
+const { geocode, plausible } = require('../lib/geocode');
+const { resolveLocation } = require('../lib/geo');
 
 const providers = [require('../lib/providers/adzuna'), require('../lib/providers/usajobs'), require('../lib/providers/jsearch'), require('../lib/providers/boards')];
 const MIN_LIVE_RELEVANCE = Number(process.env.MIN_RELEVANCE || 18);
 const OUT = path.join(__dirname, '..', 'public', 'data', 'jobs.json');
 
-function buildLeads() {
-  return employers.map((e) => {
+async function buildLeads(log = () => {}) {
+  const out = [];
+  for (const e of employers) {
+    let exact = false;
+    if (e.address && !process.env.NO_GEOCODE && process.env.npm_lifecycle_event !== 'postinstall') {
+      try {
+        const pt = await geocode(e.address);
+        if (plausible(pt, resolveLocation(`${e.city}, ${e.state}`))) { e.lat = pt.lat; e.lon = pt.lon; exact = true; log(`  geocoded ${e.org}`); }
+        else log(`  geocode miss for ${e.org} (using fallback coordinates)`);
+      } catch (err) { log(`  geocode failed for ${e.org}: ${err.message}`); }
+    }
+    out.push(makeLead(e, exact));
+  }
+  return out;
+}
+
+function makeLead(e, exact) {
+  {
     const q = `${e.org.replace(/\s*\(.*\)/, '')} ${e.terms.split(' ').slice(0, 2).join(' ')}`;
     const loc = `${e.city}, ${e.state}`;
     return finalize(withLocation({
       id: 'lead-' + e.org.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40), kind: 'lead', title: e.title, company: e.org, city: e.city, state: e.state,
-      lat: e.lat ?? null, lon: e.lon ?? null, precise: false, sector: e.sector, type: e.type || 'Full-time', remote: !!e.remote, track: e.track, url: e.url, description: e.focus, tags: e.terms.split(' '), source: 'curated', citizenshipRequired: e.cit,
+      lat: e.lat ?? null, lon: e.lon ?? null, precise: exact, sector: e.sector, type: e.type || 'Full-time', remote: !!e.remote, track: e.track, url: e.url, description: e.focus, tags: e.terms.split(' '), source: 'curated', citizenshipRequired: e.cit,
       links: { linkedin: links.linkedin(q, loc), indeed: links.indeed(q, loc), google: links.google(q, loc) },
     }, loc));
-  });
+  }
 }
 
 async function main() {
   const log = (m) => console.log(m);
-  const leads = buildLeads();
+  log('- geocoding employer addresses (OpenStreetMap)...');
+  const leads = await buildLeads(log);
   const live = [];
   const sources = { curated: leads.length };
   for (const p of providers) {
